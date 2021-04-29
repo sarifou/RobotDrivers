@@ -7,18 +7,17 @@ import json
 from speedlib.trains import dcc
 from speedlib.trains.dcc import Train
 
-train_1 = Train("DCC1", 1)
-train_2 = Train("DCC2", 2)
-train_3 = Train("DCC3", 3)
-train_4 = Train("DCC4", 4)
+dict_train = {} # Dictionnaire des trains
+MAX_NUMBER = 5
 
-dict_train = {1 : train_1, 2 : train_2, 3: train_3, 4: train_4}
+for i in range(1, MAX_NUMBER):
+    dict_train[i] = Train("DCC"+str(i), i)
+
 dcc.start() # Initialisation du controleur DCC
-
-
 
 class Thread(threading.Thread):
     """
+    Permet d'exécuter un processus lorsqu'un client se connecte et envoi une commande
     """
 
     def __init__(self, client, address):
@@ -52,7 +51,7 @@ class Thread(threading.Thread):
             dict_train[number].reverse()
             self.send_response("Fin")
         if command == "stop":
-            dict_train[number].speed=0
+            dict_train[number].speed = 0
             self.send_response("Fin")
 
     def command_with_value(self, number, value):
