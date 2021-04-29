@@ -56,6 +56,7 @@ public class Train {
 
 			this.response = input.readLine();
 			
+			System.out.println(this.response);
 			
 			output.close();
 			input.close();
@@ -103,20 +104,17 @@ public class Train {
 		this.publish(request);
 	}
 	
-	public void fl(boolean state)  {
+	public void light(boolean state)  {
 		this.command_bool("fl", state);
 	}
-	public void f1(boolean state) {
+	public void train_noise(boolean state) {
 		this.command_bool("f1", state);
 	}
-	public void f2(boolean state) {
+	public void wagon_noise(boolean state) {
 		this.command_bool("f2", state);
 	}
-	public void f3(boolean state) {
+	public void klaxon(boolean state) {
 		this.command_bool("f3", state);
-	}
-	public void f4(boolean state) {
-		this.command_bool("f4", state);
 	}
 	public String getIp() {
 		return ipAddress;
