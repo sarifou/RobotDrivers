@@ -12,6 +12,7 @@
 #include <ros.h>
 #include <std_msgs/Int64MultiArray.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/Float64MultiArray.h>
 #include <ros/time.h>
 #include <sensor_msgs/Range.h>
 
@@ -19,46 +20,33 @@
 //============ Définitions et déclarations des moteurs et des codeurs =================
 //Moteur avant gauche
 Motor moteurGaucheAvant(32,31,46);
-#define codeurAvantGauchePinA 18
-#define codeurAvantGauchePinB 23
-volatile int8_t ticksCodeurAvantGauche = 0;
 
 //Moteur arrière gauche
 Motor moteurGaucheArriere(7,34,6);
-#define codeurArriereGauchePinA 3
-#define codeurArriereGauchePinB 9
-volatile int8_t ticksCodeurArriereGauche = 0;
-
 
 //Moteur avant droit
 Motor moteurDroitAvant(33,30,44);
-#define codeurAvantDroitPinA 19
-#define codeurAvantDroitPinB 49
-volatile int8_t ticksCodeurAvantDroit = 0;
 
 //Moteur arrière droit
 Motor moteurDroitArriere(36,4,5);
-#define codeurArriereDroitPinA 2
-#define codeurArriereDroitPinB 8
-volatile int8_t ticksCodeurArriereDroit = 0;
+
 
 //============ Définitions et déclarations du capteurs ultrasons ======================
 // Déclarations du capteurs ultrason
 NewPing sonar(11,10,200);
-// message ros pour la valeur renvoyé par le capteur ultrason
-sensor_msgs::Range range_msg;
-//
-char frameid[] = "/ultrasound";
+volatile float sonar_range = 0;
+
 
 //============ Définitions et déclarations du capteurs de ligne ======================
 // Pin des capteurs de ligne
 int ligne_gauche=2;
 int ligne_centre=3;
 int ligne_droite=4;
-// message ros pour la publication des valeurs des capteurs
-std_msgs::Float32MultiArray line_msg;
 
-//============ Définitions des callback pour les souscriptions ========================
+// message ros pour publier les valeurs des capteurs
+std_msgs::Float64MultiArray pub_msgs;
+char pub_label[]= "sensors";
+
 // Callback pour le contrôle des moteurs
 void motors_callback(const std_msgs::Int64MultiArray &velocity) {
     moteurGaucheAvant.run(velocity.data[0]);
@@ -68,9 +56,10 @@ void motors_callback(const std_msgs::Int64MultiArray &velocity) {
 }
 
 ros::NodeHandle nh;
+// Subscriber pour le contrôle des moteurs du Tquad
 ros::Subscriber<std_msgs::Int64MultiArray> sub_motors("tquad/driver", motors_callback);
-ros::Publisher pub_range( "tquad/ultrasound", &range_msg);
-//ros::Publisher pub_linesensor( "tquad/linesensor", &line_msg);
+// Publisher pour les valeurs des capteurs du Tquad
+ros::Publisher pub_sensors("tquad/sensors", &pub_msgs);
 
 void setup() {
   // Initialisation de la communication série
@@ -81,42 +70,42 @@ void setup() {
   moteurGaucheAvant.init();
   moteurGaucheArriere.init();
 
+  setPubArray();
+
   // Initialisation du handler ros
-  nh.getHardware()->setBaud(115200);
+  nh.getHardware()->setBaud(115200); // Vitesse de communication fixée à 115200 bauds
   nh.initNode();
   
-  // Initilisation du publisher de l'ultrason
-  nh.advertise(pub_range);
-  
+  // Initilisation du publisher
+  nh.advertise(pub_sensors);
   // Initialisation du subscriber des moteurs
   nh.subscribe(sub_motors);
-  
-  range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
-  range_msg.header.frame_id =  frameid;
-  range_msg.field_of_view = 0.1;  // fake
-  range_msg.min_range = 0.0;
-  range_msg.max_range = 6.47;
-  
-
 }
 
 void loop() {
 
-  range();
+  publisher();
 
   nh.spinOnce();
   delay(1000);
 }
 
-void range() {
-  range_msg.range = sonar.ping_cm();
-  range_msg.header.stamp = nh.now();
-  pub_range.publish(&range_msg);
+float getSense() {
+  sonar_range = sonar.ping_cm();
+  return sonar_range ;
+}
+void publisher() {
+  pub_msgs.data[0]= getSense();
+  pub_msgs.data[1] = analogRead(ligne_centre);
+  pub_msgs.data[2] = analogRead(ligne_gauche);
+  pub_msgs.data[3] = analogRead(ligne_droite);
+  pub_sensors.publish(&pub_msgs);
 }
 
-void getLineSensors() {
-  line_msg.data[0] = analogRead(ligne_gauche);
-  line_msg.data[1] = analogRead(ligne_centre);
-  line_msg.data[2] = analogRead(ligne_droite);
-  pub_linesensor.publish(&line_msg);
+void setPubArray() {
+  pub_msgs.layout.dim[0].label = pub_label;
+  pub_msgs.layout.dim[0].size = 4;
+  pub_msgs.layout.data_offset = 0;
+  pub_msgs.data = (float*)malloc(sizeof(float) * 4);
+  pub_msgs.data_length = 4;
 }
