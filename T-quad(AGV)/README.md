@@ -34,7 +34,7 @@ Cloner le répertoire github
 
     git clone https://github.com/sarifou/RobotDrivers.git
 
-Copier coller le répertoire tquad dans vers le src de ros_workspace et construiser à nouveau votre espace de travaille.
+Copier-coller le package tquad du répertoire ros_package vers le src de votre espace de travail catkin et construiser à nouveau l'espace de travail : 
 
     catkin_make
 
