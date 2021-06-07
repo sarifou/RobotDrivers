@@ -1,31 +1,47 @@
 # Programme de control des robots mobiles T-quads
 
 ## Configurations
-* Ubuntu mate 16.04.7 LTS
+* Raspbian
 * ros kinetic
 ## Installations
-### Installation de ubuntu mate
-Télécharger ubuntu 3 et l'installer sur la carte mémoire de la raspberry pi.
+### Installation de Raspbian
+Télécharger Raspberry Pi OS Desktop et l'installer sur la carte mémoire de la raspberry pi.
 
-Lien de téléchargement : [ici](https://releases.ubuntu-mate.org/archived/16.04/)
-### Installation de ros kinectic
-Etape 1 : Configurer de ubuntu pour qu'il accepte les packages ros
+Lien de téléchargement : [ici](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-desktop)
+### Installation de ROS kinetic
+Suivre le tutoriel suivant pour installer ROS depuis les sources.
 
-    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-Etape 2 : Configurer les clés 
-
-    sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-Etape 3 : Mettre à jour ubuntu
-
-    sudo apt-get update
-Etape 4 : Installer ROS, rqt, rviz et robot-generic librairies
-
-    sudo apt-get install ros-kinetic-desktop
+Tutoriel d'installation : [ici](http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Kinetic%20on%20the%20Raspberry%20Pi)
 
 ### Installations des packages additionnels ROS
 
-* ROS Bridge
-* ROS Serial
+**ROS Bridge**
+
+    sudo apt-get install ros-kinetic-rosbridge-server
+
+**ROS Serial**
+
+    sudo apt-get install ros-kinetic-rosserial
+
+### Installation du paquet tquad ros
+Créer et initialiser un espace de travail ros sur votre bureau
+
+    mkdir ros_workspace/src
+    cd ros_workspace/src
+    catkin_make
+
+Cloner le répertoire github
+
+    git clone https://github.com/sarifou/RobotDrivers.git
+
+Copier coller le répertoire tquad dans vers le src de ros_workspace et construiser à nouveau votre espace de travaille.
+
+    catkin_make
+
+### Installation du firmeware pour l'arduino méga.
+
+Avec le logiciel arduino, compiler le fichier firmeware.ino dans l'arduino mega du tquad
+
 ## Liste des topics
 
 ## Utilisation

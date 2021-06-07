@@ -1,2 +1,0 @@
-tquad
--DCATKIN_DEVEL_PREFIX=/home/cristal/ros/workspace/devel -DCMAKE_INSTALL_PREFIX=/home/cristal/ros/workspace/install -G Unix Makefiles

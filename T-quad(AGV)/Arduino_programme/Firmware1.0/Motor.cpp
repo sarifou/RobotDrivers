@@ -17,8 +17,8 @@ void Motor::run(int speed) {
     if(c_speed  > 255) {
         c_speed  = 255;
     }
-    if(c_speed > 255) {
-        c_speed  = 255;
+    if(c_speed < -255) {
+        c_speed  = -255;
     }
     if (c_speed  >= 0) {
         digitalWrite(c_directionAMotor, HIGH);
