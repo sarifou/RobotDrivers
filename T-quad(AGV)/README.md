@@ -13,15 +13,14 @@ Suivre le tutoriel suivant pour installer ROS depuis les sources.
 
 Tutoriel d'installation : [ici](http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Kinetic%20on%20the%20Raspberry%20Pi)
 
-### Installations des packages additionnels ROS
+### Installations des packages additionnels ROS (*Rosbridge* et *Rosserial*)
 
-**ROS Bridge**
+    cd ~/ros_catkin_ws
+    rosinstall_generator rosbridge_server rosserial --rosdistro kinetic --deps --wet-only --tar > kinetic-custom_ros.rosinstall
+    wstool merge -t src kinetic-custom_ros.rosinstall
+    rosdep install -y --from-paths src --ignore-src --rosdistro kinetic -r --os=debian:buster
 
-    sudo apt-get install ros-kinetic-rosbridge-server
-
-**ROS Serial**
-
-    sudo apt-get install ros-kinetic-rosserial
+> :warning: **If you are using mobile browser**: Be very careful here!
 
 ### Installation du paquet tquad ros
 Créer et initialiser un espace de travail ros sur votre bureau
