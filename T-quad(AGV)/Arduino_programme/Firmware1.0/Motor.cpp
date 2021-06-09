@@ -12,6 +12,9 @@ void Motor::init() {
     pinMode(c_directionBMotor, OUTPUT);
     pinMode(c_pwmMotor, OUTPUT);
 }
+/**
+ * 
+ */
 void Motor::run(int speed) {
     c_speed = speed ;
     if(c_speed  > 255) {

@@ -18,9 +18,10 @@ Tutoriel d'installation : [ici](http://wiki.ros.org/ROSberryPi/Installing%20ROS%
     cd ~/ros_catkin_ws
     rosinstall_generator rosbridge_server rosserial --rosdistro kinetic --deps --wet-only --tar > kinetic-custom_ros.rosinstall
     wstool merge -t src kinetic-custom_ros.rosinstall
+    wstool update -t src
     rosdep install -y --from-paths src --ignore-src --rosdistro kinetic -r --os=debian:buster
 
-> :warning: **If you are using mobile browser**: Be very careful here!
+> :warning: Si la commande *wstool update -t src* ne fonctionne pas, il faut fermer et ouvrir le terminal.
 
 ### Installation du paquet tquad ros
 Créer et initialiser un espace de travail ros sur votre bureau
@@ -51,3 +52,8 @@ Pour contrôler le tquad avec un client rosbridge
 Pour contrôler le tquad avec le teleop_key
 
     roslaunch tquad tquad_teleop_key.launch
+
+$$\begin{array}{ccc}
+x_{11} & x_{12} & x_{13}\\
+x_{21} & x_{22} & x_{23}
+\end{array}$$
