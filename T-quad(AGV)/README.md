@@ -53,7 +53,3 @@ Pour contrôler le tquad avec le teleop_key
 
     roslaunch tquad tquad_teleop_key.launch
 
-$$\begin{array}{ccc}
-x_{11} & x_{12} & x_{13}\\
-x_{21} & x_{22} & x_{23}
-\end{array}$$

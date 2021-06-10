@@ -7,16 +7,15 @@
 #define  pin_axis_2 11
 #define  pin_axis_3 6
 
+
 // Déclaration des axes du bras robotique
-Servo axis_0 ;
-Servo axis_1 ;
-Servo axis_2 ;
-Servo axis_3 ;
+Servo axis_0 ; //base
+Servo axis_1 ; //right
+Servo axis_2 ; //left
+Servo axis_3 ; //gripper
 void setup() {
   attach_axis();
   init_position();
-  open_gripper();
-  close_gripper();
   delay(1000);
 
 }
@@ -30,7 +29,7 @@ void loop() {
 }
 /*-------------------------------------------------------------*/
 // Fonction d'attache des axes du bras robotique
-void attachAxis() {
+void attach_axis() {
   axis_0.attach(pin_axis_0);
   axis_1.attach(pin_axis_1);
   axis_2.attach(pin_axis_2);
@@ -40,22 +39,23 @@ void attachAxis() {
 /*-------------------------------------------------------------*/
 // Fonction d'initialisation des positions du bras robotique
 void init_position() {
-  axis_0.write(0);
-  axis_1.write(50);
-  axis_2.write(120);
-  axis_3.write(180);
+  axis_0.write(180);
+  axis_1.write(65);
+  axis_2.write(110); 
+  open_gripper();
+  close_gripper();
 }
 
 void open_gripper() {
   for(int i=180; i>=120; i--){
     axis_3.write(i);
-    delay(50);
+    delay(30);
   }
 }
 
 void close_gripper() {
   for (int i = 120; i<=180; i++){
     axis_3.write(i);
-    delay(50);
+    delay(30);
   }
 }
