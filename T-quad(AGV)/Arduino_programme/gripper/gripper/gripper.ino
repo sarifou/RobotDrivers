@@ -40,8 +40,8 @@ void attach_axis() {
 // Fonction d'initialisation des positions du bras robotique
 void init_position() {
   axis_0.write(180);
-  axis_1.write(65);
-  axis_2.write(110); 
+  axis_1.write(156);
+  axis_2.write(113); 
   open_gripper();
   close_gripper();
 }
