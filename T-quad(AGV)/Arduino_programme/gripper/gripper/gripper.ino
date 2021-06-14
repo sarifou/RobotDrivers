@@ -6,8 +6,19 @@
 #define  pin_axis_1 10
 #define  pin_axis_2 11
 #define  pin_axis_3 6
+/*
+typedef struct 
+{
+  uint8_t pin;
+  int offset;
+  int min_pos;
+  int max_pos ;
+} MeArmServo;
 
+Servo axis[4];
 
+MeArmServo mearmServo[AXIS]= {{9,0,0,180},{10,0,50,170},{11,0,20,160},{}}
+*/
 // Déclaration des axes du bras robotique
 Servo axis_0 ; //base
 Servo axis_1 ; //right
@@ -39,9 +50,9 @@ void attach_axis() {
 /*-------------------------------------------------------------*/
 // Fonction d'initialisation des positions du bras robotique
 void init_position() {
-  axis_0.write(180);
-  axis_1.write(156);
-  axis_2.write(113); 
+  axis_0.write(0);
+  axis_1.write(78);
+  axis_2.write(111); 
   open_gripper();
   close_gripper();
 }

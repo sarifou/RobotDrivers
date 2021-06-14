@@ -15,8 +15,29 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <ros/time.h>
 #include <sensor_msgs/Range.h>
+#include <Servo.h>
 
+//============ MeArm =================
+/*
+typedef struct 
+{
+  uint8_t pin;
+  int offset;
+  int min_pos;
+  int max_pos ;
+} MeArmServo;
 
+Servo axis[4];
+*/
+#define  pin_axis_0 9
+#define  pin_axis_1 10
+#define  pin_axis_2 11
+#define  pin_axis_3 6
+
+Servo axis_0 ; //base
+Servo axis_1 ; //right
+Servo axis_2 ; //left
+Servo axis_3 ; //gripper
 //============ Définitions et déclarations des moteurs et des codeurs =================
 //Moteur avant gauche
 Motor moteurGaucheAvant(32,31,46);
@@ -48,18 +69,24 @@ std_msgs::Float64MultiArray pub_msgs;
 char pub_label[]= "sensors";
 
 // Callback pour le contrôle des moteurs
-void motors_callback(const std_msgs::Int64MultiArray &velocity) {
-    moteurGaucheAvant.run(velocity.data[0]);
-    moteurGaucheArriere.run(velocity.data[1]);
-    moteurDroitAvant.run(velocity.data[2]);
-    moteurDroitArriere.run(velocity.data[3]);
+void subscriber_callback(const std_msgs::Int64MultiArray &value) {
+  // Commande des moteurs
+  moteurGaucheAvant.run(value.data[0]);
+  moteurGaucheArriere.run(value.data[1]);
+  moteurDroitAvant.run(value.data[2]);
+  moteurDroitArriere.run(value.data[3]);
+
+  // Commande des articulations du bras robotiques
+  
+  // Commande du gripper
+  set_gripper(value.data[7]);
 }
 
 ros::NodeHandle nh;
 // Subscriber pour le contrôle des moteurs du Tquad
-ros::Subscriber<std_msgs::Int64MultiArray> sub_motors("tquad/driver", motors_callback);
+ros::Subscriber<std_msgs::Int64MultiArray> serial_subscriber("tquad/serial_subscriber", subscriber_callback);
 // Publisher pour les valeurs des capteurs du Tquad
-ros::Publisher pub_sensors("tquad/sensors", &pub_msgs);
+ros::Publisher serial_publisher("tquad/serial_publisher", &pub_msgs);
 
 void setup() {
   // Initialisation de la communication série
@@ -70,6 +97,10 @@ void setup() {
   moteurGaucheAvant.init();
   moteurGaucheArriere.init();
 
+  // Déclaration et initiation des axes du bras robotique
+  attach_axis();
+  init_position();
+
   setPubArray();
 
   // Initialisation du handler ros
@@ -77,9 +108,9 @@ void setup() {
   nh.initNode();
   
   // Initilisation du publisher
-  nh.advertise(pub_sensors);
+  nh.advertise(serial_publisher);
   // Initialisation du subscriber des moteurs
-  nh.subscribe(sub_motors);
+  nh.subscribe(serial_subscriber);
 }
 
 void loop() {
@@ -99,7 +130,7 @@ void publisher() {
   pub_msgs.data[1] = analogRead(ligne_centre);
   pub_msgs.data[2] = analogRead(ligne_gauche);
   pub_msgs.data[3] = analogRead(ligne_droite);
-  pub_sensors.publish(&pub_msgs);
+  serial_publisher.publish(&pub_msgs);
 }
 
 void setPubArray() {
@@ -108,4 +139,36 @@ void setPubArray() {
   pub_msgs.layout.data_offset = 0;
   pub_msgs.data = (float*)malloc(sizeof(float) * 4);
   pub_msgs.data_length = 4;
+}
+
+void attach_axis() {
+  axis_0.attach(pin_axis_0);
+  axis_1.attach(pin_axis_1);
+  axis_2.attach(pin_axis_2);
+  axis_3.attach(pin_axis_3);
+}
+void init_position() {
+  axis_0.write(0);
+  axis_1.write(78);
+  axis_2.write(111); 
+  open_gripper();
+  close_gripper();
+}
+
+void open_gripper() {
+  for(int i=180; i>=120; i--){
+    axis_3.write(i);
+    delay(30);
+  }
+}
+
+void close_gripper() {
+  for (int i = 120; i<=180; i++){
+    axis_3.write(i);
+    delay(30);
+  }
+}
+void set_gripper(value) {
+  if (value==1) close_gripper();
+  else open_gripper();
 }
