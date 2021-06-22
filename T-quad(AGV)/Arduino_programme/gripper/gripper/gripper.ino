@@ -32,6 +32,12 @@ void setup() {
 }
 
 void loop() {
+  gotoPosition(0,90,90);
+  delay(1000);
+  gotoPosition(180,160,25);
+  delay(1000);
+  init_position();
+  delay(1000);
 //  servo.write(100);
 //  delay(1000);
 //  servo.write(180);
@@ -51,10 +57,15 @@ void attach_axis() {
 // Fonction d'initialisation des positions du bras robotique
 void init_position() {
   axis_0.write(0);
-  axis_1.write(78);
-  axis_2.write(111); 
+  axis_1.write(65);
+  axis_2.write(110); 
   open_gripper();
   close_gripper();
+}
+void gotoPosition(int x,int y,int z) {
+  axis_0.write(x);
+  axis_1.write(y);
+  axis_2.write(z);
 }
 
 void open_gripper() {

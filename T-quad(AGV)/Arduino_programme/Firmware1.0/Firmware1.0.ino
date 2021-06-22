@@ -17,27 +17,6 @@
 #include <sensor_msgs/Range.h>
 #include <Servo.h>
 
-//============ MeArm =================
-/*
-typedef struct 
-{
-  uint8_t pin;
-  int offset;
-  int min_pos;
-  int max_pos ;
-} MeArmServo;
-
-Servo axis[4];
-*/
-#define  pin_axis_0 9
-#define  pin_axis_1 10
-#define  pin_axis_2 11
-#define  pin_axis_3 6
-
-Servo axis_0 ; //base
-Servo axis_1 ; //right
-Servo axis_2 ; //left
-Servo axis_3 ; //gripper
 //============ Définitions et déclarations des moteurs et des codeurs =================
 //Moteur avant gauche
 Motor moteurGaucheAvant(32,31,46);
@@ -64,6 +43,9 @@ int ligne_gauche=2;
 int ligne_centre=3;
 int ligne_droite=4;
 
+//============ Définition du pin de la Batterie ======================
+#define pin_bat 5
+
 // message ros pour publier les valeurs des capteurs
 std_msgs::Float64MultiArray pub_msgs;
 char pub_label[]= "sensors";
@@ -75,11 +57,6 @@ void subscriber_callback(const std_msgs::Int64MultiArray &value) {
   moteurGaucheArriere.run(value.data[1]);
   moteurDroitAvant.run(value.data[2]);
   moteurDroitArriere.run(value.data[3]);
-
-  // Commande des articulations du bras robotiques
-  
-  // Commande du gripper
-  set_gripper(value.data[7]);
 }
 
 ros::NodeHandle nh;
@@ -97,10 +74,6 @@ void setup() {
   moteurGaucheAvant.init();
   moteurGaucheArriere.init();
 
-  // Déclaration et initiation des axes du bras robotique
-  attach_axis();
-  init_position();
-
   setPubArray();
 
   // Initialisation du handler ros
@@ -114,9 +87,7 @@ void setup() {
 }
 
 void loop() {
-
   publisher();
-
   nh.spinOnce();
   delay(1000);
 }
@@ -141,34 +112,6 @@ void setPubArray() {
   pub_msgs.data_length = 4;
 }
 
-void attach_axis() {
-  axis_0.attach(pin_axis_0);
-  axis_1.attach(pin_axis_1);
-  axis_2.attach(pin_axis_2);
-  axis_3.attach(pin_axis_3);
-}
-void init_position() {
-  axis_0.write(0);
-  axis_1.write(78);
-  axis_2.write(111); 
-  open_gripper();
-  close_gripper();
-}
-
-void open_gripper() {
-  for(int i=180; i>=120; i--){
-    axis_3.write(i);
-    delay(30);
-  }
-}
-
-void close_gripper() {
-  for (int i = 120; i<=180; i++){
-    axis_3.write(i);
-    delay(30);
-  }
-}
-void set_gripper(value) {
-  if (value==1) close_gripper();
-  else open_gripper();
+uint16_t getBatteryVoltage() {
+    return (int)(1000. * 3. * (5. * (float)analogRead(pin_bat) / 1024.));
 }
