@@ -48,7 +48,7 @@ int ligne_droite=4;
 
 // message ros pour publier les valeurs des capteurs
 std_msgs::Float64MultiArray pub_msgs;
-char pub_label[]= "sensors";
+char pub_label[]= "serial_pub_values";
 
 // Callback pour le contrôle des moteurs
 void subscriber_callback(const std_msgs::Int64MultiArray &value) {
@@ -66,13 +66,8 @@ ros::Subscriber<std_msgs::Int64MultiArray> serial_subscriber("tquad/serial_subsc
 ros::Publisher serial_publisher("tquad/serial_publisher", &pub_msgs);
 
 void setup() {
-  // Initialisation de la communication série
-  
   // Initialisations des moteurs
-  moteurDroitAvant.init();
-  moteurDroitArriere.init();
-  moteurGaucheAvant.init();
-  moteurGaucheArriere.init();
+  init_motors();
 
   setPubArray();
 
@@ -96,20 +91,27 @@ float getSense() {
   sonar_range = sonar.ping_cm();
   return sonar_range ;
 }
+void init_motors() {
+  moteurDroitAvant.init();
+  moteurDroitArriere.init();
+  moteurGaucheAvant.init();
+  moteurGaucheArriere.init();
+}
 void publisher() {
   pub_msgs.data[0]= getSense();
   pub_msgs.data[1] = analogRead(ligne_centre);
   pub_msgs.data[2] = analogRead(ligne_gauche);
   pub_msgs.data[3] = analogRead(ligne_droite);
+  pub_msgs.data[4] = getBatteryVoltage();
   serial_publisher.publish(&pub_msgs);
 }
 
 void setPubArray() {
   pub_msgs.layout.dim[0].label = pub_label;
-  pub_msgs.layout.dim[0].size = 4;
+  pub_msgs.layout.dim[0].size = 5;
   pub_msgs.layout.data_offset = 0;
-  pub_msgs.data = (float*)malloc(sizeof(float) * 4);
-  pub_msgs.data_length = 4;
+  pub_msgs.data = (float*)malloc(sizeof(float) * 5);
+  pub_msgs.data_length = 5;
 }
 
 uint16_t getBatteryVoltage() {
