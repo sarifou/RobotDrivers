@@ -4,13 +4,15 @@
 #======= Import ================
 import rospy
 from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import Int64MultiArray
 from sensor_msgs.msg import Range
 from sensor_msgs.msg import BatteryState
-from msg import LineSensor
+from tquad.msg import LineSensor
 
 lineSensor = LineSensor()
 ultrasound = Range()
 battery = BatteryState()
+encoders = Int64MultiArray()
 
 def publishRange(value):
     """
@@ -43,14 +45,21 @@ def publishLineSensors(middle, left, right):
     lineSensor.right = right
     lines_pub.publish(lineSensor)
 
+def publishEncoders(motorFrontRight, motorBackRight, motorFrontLeft, motorBackLeft) :
+    """
+        Fonction qui retourne la valeur des encodeurs sur le topic tquad/encoders
+    """
+    encoders.data = [motorFrontRight, motorBackRight, motorFrontLeft, motorBackLeft]
+    encoders_pub.publish(encoders)
+
 def callback(data):
     """
         Fonction callback du subscriber
     """
-    rospy.loginfo("I heard %s",data.data)
     publishRange(data.data[0])
     publishBatteryVoltage(data.data[4])
     publishLineSensors(data.data[1], data.data[2], data.data[3])
+    publishEncoders(data.data[5],data.data[6],data.data[7],data.data[8])
 
 if __name__ == '__main__':
     try:
@@ -59,6 +68,7 @@ if __name__ == '__main__':
         ultrasound_pub = rospy.Publisher('tquad/ultrasound', Range, queue_size=2)
         lines_pub = rospy.Publisher('tquad/lines_sensors', LineSensor, queue_size=2)
         battery_pub = rospy.Publisher('tquad/battery_state', BatteryState, queue_size=2)
+        encoders_pub = rospy.Publisher('tquad/encoders', Int64MultiArray, queue_size =2)
         rospy.spin()
     except rospy.ROSInterruptException:
         pass

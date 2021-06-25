@@ -150,16 +150,19 @@ void publisher() {
   pub_msgs.data[2] = analogRead(left);
   pub_msgs.data[3] = analogRead(right);
   pub_msgs.data[4] = getBatteryVoltage();
-  pub_msgs.data[5] = ticksCodeurArriereDroit;
+  pub_msgs.data[5] = ticksCodeurAvantDroit;
+  pub_msgs.data[6] = ticksCodeurArriereDroit;
+  pub_msgs.data[7] = ticksCodeurAvantGauche;
+  pub_msgs.data[8] = ticksCodeurArriereGauche;
   serial_publisher.publish(&pub_msgs);
 }
 
 void setPubArray() {
   pub_msgs.layout.dim[0].label = pub_label;
-  pub_msgs.layout.dim[0].size = 6;
+  pub_msgs.layout.dim[0].size = 9;
   pub_msgs.layout.data_offset = 0;
-  pub_msgs.data = (float*)malloc(sizeof(float) * 6);
-  pub_msgs.data_length = 6;
+  pub_msgs.data = (float*)malloc(sizeof(float) * 9);
+  pub_msgs.data_length = 9;
 }
 
 /*************** Fonction pour le voltage de la battery ********************************/
