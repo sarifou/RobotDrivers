@@ -6,7 +6,7 @@ from std_msgs.msg import Int16MultiArray
 
 
 def motors():
-    pub = rospy.Publisher('tquad/driver', Int16MultiArray, queue_size=1)
+    pub = rospy.Publisher('tquad/serial_subscriber', Int16MultiArray, queue_size=1)
     rospy.init_node('tquad_driver', anonymous=True)
     rate = rospy.Rate(1) # 1hz
 

@@ -31,10 +31,10 @@ def publishBatteryVoltage(value):
     """
     battery.header.stamp = rospy.Time.now()
     battery.voltage = value / 1000
-    battery.percentage = 1
+    battery.percentage = value / 7400
     battery_pub.publish(battery)
 
-def publishLineSensors(left, middle, right):
+def publishLineSensors(middle, left, right):
     """
         Fonction pour publier les valeurs renvoyées par les capteurs de ligne
     """
